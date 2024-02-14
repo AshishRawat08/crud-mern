@@ -13,7 +13,7 @@ function App() {
       <Headers />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/userprofile:id" element={<Profile />} />
+        <Route path="/userprofile/:id" element={<Profile />} />
         <Route path="/register" element={<Register />} />
         <Route path="/edit/:id" element={<Edit />} />
       </Routes>
