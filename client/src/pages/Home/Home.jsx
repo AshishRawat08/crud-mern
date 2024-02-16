@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./home.css";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -6,21 +6,48 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { useNavigate } from "react-router-dom";
 import Tables from "../../components/Tables/Tables";
 import Spiner from "../../components/Spiner/Spiner";
+import { addData } from "../../components/Context/ContextProvider";
+import Alert from "react-bootstrap/Alert";
+import { getAllUsersFunction } from "../../services/Apis";
 
 const Home = () => {
+  const [usersData, setUsersData] = useState("");
   const [showSpin, setShowSpin] = useState(true);
+
+  const { useradd, setUseradd } = useContext(addData);
+
   const navigate = useNavigate();
   const addUser = () => {
     navigate("/register");
   };
 
+  const getAllUsers = async () => {
+    const response = await getAllUsersFunction();
+    // console.log(response);
+    if (response.status === 200) {
+      setUsersData(response.data);
+    } else {
+      console.log("erro while getting user data");
+    }
+  };
+
   useEffect(() => {
+    getAllUsers();
     setTimeout(() => {
       setShowSpin(false);
     }, 1200);
   }, []);
+
   return (
     <>
+      {useradd ? (
+        <Alert variant="success" onClose={() => setUseradd("")} dismissible>
+          {useradd.fname.toUpperCase()} Successfully Added
+        </Alert>
+      ) : (
+        ""
+      )}
+
       <div className="container">
         <div className="main_div">
           {/* search and add btn  */}
@@ -121,7 +148,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-        {showSpin ? <Spiner /> : <Tables />}
+        {showSpin ? <Spiner /> : <Tables usersData={usersData} />}
       </div>
     </>
   );

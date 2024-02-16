@@ -8,6 +8,10 @@ import Select from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Spiner from "../../components/Spiner/Spiner";
+import { registerFunction } from "../../services/Apis";
+import { useNavigate } from "react-router-dom";
+import { addData } from "../../components/Context/ContextProvider";
+import { useContext } from "react";
 
 const Register = () => {
   const [inputData, setInputData] = useState({
@@ -24,6 +28,8 @@ const Register = () => {
   const [image, setImage] = useState("");
   const [preview, setPreview] = useState("");
   const [showSpin, setShowSpin] = useState(true);
+  const navigate = useNavigate();
+  const { useradd, setUseradd } = useContext(addData);
 
   //staus option
   const options = [
@@ -45,7 +51,7 @@ const Register = () => {
     setImage(e.target.files[0]);
   };
   // submit user data
-  const submitUserData = (e) => {
+  const submitUserData = async (e) => {
     e.preventDefault();
 
     const { fname, lname, email, mobile, gender, location } = inputData;
@@ -68,7 +74,38 @@ const Register = () => {
     } else if (image === "") {
       toast.error("Profile Pic is required !");
     } else {
-      toast.success("Registration successfully done !");
+      const data = new FormData();
+      data.append("fname", fname);
+      data.append("lname", lname);
+      data.append("email", email);
+      data.append("mobile", mobile);
+      data.append("gender", gender);
+      data.append("status", status);
+      data.append("user_profile", image);
+      data.append("location", location);
+
+      const config = {
+        "Content-Type": "multipart/form-data",
+      };
+
+      const response = await registerFunction(data, config);
+      if (response.status === 200) {
+        setInputData({
+          ...inputData,
+          fname: "",
+          lname: "",
+          email: "",
+          mobile: "",
+          gender: "",
+          location: "",
+        });
+        setStatus("");
+        setImage("");
+        setUseradd(response.data);
+        navigate("/");
+      } else {
+        toast.error("something went wrong !");
+      }
     }
   };
 
@@ -176,11 +213,7 @@ const Register = () => {
                   controlId="formBasicEmail"
                 >
                   <Form.Label>Select your status</Form.Label>
-                  <Select
-                    options={options}
-                    onChange={setStatusValue}
-                    value={status}
-                  />
+                  <Select options={options} onChange={setStatusValue} />
                 </Form.Group>
 
                 <Form.Group
