@@ -13,7 +13,7 @@ const Profile = () => {
   const [userProfile, setUserProfile] = useState({});
 
   const { id } = useParams();
-  console.log(id);
+  // console.log(id);
 
   const userProfileGet = async () => {
     const response = await getSingleUserFunction(id);
@@ -43,7 +43,7 @@ const Profile = () => {
               <Row>
                 <div className="col">
                   <div className="card-profile-stats d-flex justify-content-center">
-                    <img src={`${BASE_URL}/uploads/${userProfile.profile}`} />
+                    <img src={`${BASE_URL}/uploads/${userProfile.profile}`} alt="pro-pic"/>
                   </div>
                 </div>
               </Row>

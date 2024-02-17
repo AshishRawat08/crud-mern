@@ -65,3 +65,54 @@ exports.getSingleUser = async (req, res) => {
     console.log("error");
   }
 };
+
+// edit/update user
+exports.userEdit = async (req, res) => {
+  const { id } = req.params;
+  const {
+    fname,
+    lname,
+    email,
+    mobile,
+    gender,
+    location,
+    status,
+    user_profile,
+  } = req.body;
+  const file = req.file ? req.file.filename : user_profile;
+
+  const dateupdate = moment(new Date()).format("YYYY-MM-DD hh:mm:ss");
+  try {
+    const updateUser = await users.findByIdAndUpdate(
+      { _id: id },
+      {
+        fname,
+        lname,
+        email,
+        mobile,
+        gender,
+        location,
+        status,
+        profile: file,
+        dateupdate,
+      },
+      { new: true }
+    );
+    await updateUser.save();
+    res.status(200).json(updateUser);
+  } catch (error) {
+    res.status(401).json(error);
+  }
+};
+
+//delete user
+
+exports.userDelete = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deleteUser = await users.findByIdAndDelete({ _id: id });
+    res.status(200).json(deleteUser);
+  } catch (error) {
+    res.status(401).json(error);
+  }
+};

@@ -8,7 +8,7 @@ import Badge from "react-bootstrap/Badge";
 import { BASE_URL } from "../../services/helper";
 import { NavLink } from "react-router-dom";
 
-const Tables = ({ usersData }) => {
+const Tables = ({ usersData, deleteUser }) => {
   return (
     <>
       <div className="container">
@@ -91,20 +91,30 @@ const Tables = ({ usersData }) => {
                                     </NavLink>
                                   </Dropdown.Item>
                                   <Dropdown.Item>
-                                    <i
-                                      class="fa-solid fa-pen-to-square"
-                                      style={{ color: "blue" }}
-                                    ></i>
-                                    &nbsp;
-                                    <span>Edit</span>
+                                    <NavLink
+                                      to={`/edit/${element._id}`}
+                                      className="text-decoration-none"
+                                      style={{ color: "black" }}
+                                    >
+                                      <i
+                                        class="fa-solid fa-pen-to-square"
+                                        style={{ color: "blue" }}
+                                      ></i>
+                                      &nbsp;
+                                      <span>Edit</span>
+                                    </NavLink>
                                   </Dropdown.Item>
                                   <Dropdown.Item>
-                                    <i
-                                      class="fa-solid fa-trash"
-                                      style={{ color: "red" }}
-                                    ></i>
-                                    &nbsp;
-                                    <span>Delete</span>
+                                    <div
+                                      onClick={() => deleteUser(element._id)}
+                                    >
+                                      <i
+                                        class="fa-solid fa-trash"
+                                        style={{ color: "red" }}
+                                      ></i>
+                                      &nbsp;
+                                      <span>Delete</span>
+                                    </div>
                                   </Dropdown.Item>
                                 </Dropdown.Menu>
                               </Dropdown>

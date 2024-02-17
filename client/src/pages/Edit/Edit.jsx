@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import "./edit.css";
 import Button from "react-bootstrap/Button";
@@ -8,6 +8,10 @@ import Select from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Spiner from "../../components/Spiner/Spiner";
+import { editUserFunction, getSingleUserFunction } from "../../services/Apis";
+import { useNavigate, useParams } from "react-router-dom";
+import { BASE_URL } from "../../services/helper";
+import { updatedata } from "../../components/Context/ContextProvider";
 
 const Edit = () => {
   const [inputData, setInputData] = useState({
@@ -22,8 +26,15 @@ const Edit = () => {
 
   const [status, setStatus] = useState("Active");
   const [image, setImage] = useState("");
+  const [editImage, setEditImage] = useState("");
   const [preview, setPreview] = useState("");
   const [showSpin, setShowSpin] = useState(true);
+
+  const { updateUser, setUpdateUser } = useContext(updatedata);
+
+  const naviagte = useNavigate();
+
+  const { id } = useParams();
 
   //staus option
   const options = [
@@ -40,12 +51,26 @@ const Edit = () => {
   const setStatusValue = (e) => {
     setStatus(e.value);
   };
-  //profile set
+  //profile img set
   const setProfileValue = (e) => {
     setImage(e.target.files[0]);
   };
+
+  const userProfileGet = async () => {
+    const response = await getSingleUserFunction(id);
+    if (response.status === 200) {
+      // console.log(response);
+
+      setInputData(response.data);
+      setStatus(response.data.status);
+      setEditImage(response.data.profile);
+    } else {
+      console.log("error");
+    }
+  };
+
   // submit user data
-  const submitUserData = (e) => {
+  const submitUserData = async (e) => {
     e.preventDefault();
 
     const { fname, lname, email, mobile, gender, location } = inputData;
@@ -65,20 +90,42 @@ const Edit = () => {
       toast.error("Location name is required !");
     } else if (status === "") {
       toast.error("Status is required !");
-    } else if (image === "") {
-      toast.error("Profile Pic is required !");
     } else {
-      toast.success("Registration successfully done !");
+      const data = new FormData();
+      data.append("fname", fname);
+      data.append("lname", lname);
+      data.append("email", email);
+      data.append("mobile", mobile);
+      data.append("gender", gender);
+      data.append("status", status);
+      data.append("user_profile", image || editImage);
+      data.append("location", location);
+
+      const config = {
+        "Content-Type": "multipart/form-data",
+      };
+      const response = await editUserFunction(id, data, config);
+      console.log(response);
+
+      if (response.status === 200) {
+        setUpdateUser(response.data);
+        naviagte("/");
+      }
     }
   };
 
   useEffect(() => {
+    userProfileGet();
+  }, [id]);
+
+  useEffect(() => {
+    setEditImage();
     if (image) {
       setPreview(URL.createObjectURL(image));
     }
   }, [image]);
 
-  // if dont want to use useEffect multiple timesn we can write like this
+  // if dont want to use useEffect multiple times we can write like this
   // useEffect(() => {
   //   if (image) {
   //     setPreview(URL.createObjectURL(image));
@@ -103,7 +150,10 @@ const Edit = () => {
           <h2 className="text-center mt-1">Update Your Details</h2>
           <Card className="shadow mt-3 p-3">
             <div className="profile_div text-center">
-              <img src={preview ? preview : "/man.png"} alt="" />
+              <img
+                src={image ? preview : `${BASE_URL}/uploads/${editImage}`}
+                alt="profile-pic"
+              />
             </div>
             <Form>
               <Row>
@@ -174,6 +224,7 @@ const Edit = () => {
                     label={`Male`}
                     value={"Male"}
                     onChange={setInputValue}
+                    checked={inputData.gender == "Male" ? true : false}
                   />
                   <Form.Check
                     type={"radio"}
@@ -181,6 +232,7 @@ const Edit = () => {
                     label={`Female`}
                     value={"Female"}
                     onChange={setInputValue}
+                    checked={inputData.gender == "Female" ? true : false}
                   />
                 </Form.Group>
 
@@ -192,7 +244,7 @@ const Edit = () => {
                   <Select
                     options={options}
                     onChange={setStatusValue}
-                    value={status}
+                    defaultValue={status}
                   />
                 </Form.Group>
 

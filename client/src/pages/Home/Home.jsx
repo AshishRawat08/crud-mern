@@ -6,21 +6,25 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { useNavigate } from "react-router-dom";
 import Tables from "../../components/Tables/Tables";
 import Spiner from "../../components/Spiner/Spiner";
-import { addData } from "../../components/Context/ContextProvider";
+import { updatedata, addData, deletedata } from "../../components/Context/ContextProvider";
 import Alert from "react-bootstrap/Alert";
-import { getAllUsersFunction } from "../../services/Apis";
+import { deleteUserFunction, getAllUsersFunction } from "../../services/Apis";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const [usersData, setUsersData] = useState("");
   const [showSpin, setShowSpin] = useState(true);
 
   const { useradd, setUseradd } = useContext(addData);
+  const { updateUser, setUpdateUser } = useContext(updatedata);
+  const {deleteUserdata, setDeleteUserdata} = useContext(deletedata)
 
   const navigate = useNavigate();
   const addUser = () => {
     navigate("/register");
   };
 
+  // get all user
   const getAllUsers = async () => {
     const response = await getAllUsersFunction();
     // console.log(response);
@@ -28,6 +32,17 @@ const Home = () => {
       setUsersData(response.data);
     } else {
       console.log("erro while getting user data");
+    }
+  };
+
+  // delete a user
+  const deleteUser = async (id) => {
+    // console.log(id);
+    const response = await deleteUserFunction(id);
+    if (response.status === 200) {
+      getAllUsers();
+    } else {
+      toast.error("error");
     }
   };
 
@@ -43,6 +58,14 @@ const Home = () => {
       {useradd ? (
         <Alert variant="success" onClose={() => setUseradd("")} dismissible>
           {useradd.fname.toUpperCase()} Successfully Added
+        </Alert>
+      ) : (
+        ""
+      )}
+
+      {updateUser ? (
+        <Alert variant="primary" onClose={() => setUpdateUser("")} dismissible>
+          {updateUser.fname.toUpperCase()} Successfully Updated
         </Alert>
       ) : (
         ""
@@ -148,7 +171,11 @@ const Home = () => {
             </div>
           </div>
         </div>
-        {showSpin ? <Spiner /> : <Tables usersData={usersData} />}
+        {showSpin ? (
+          <Spiner />
+        ) : (
+          <Tables usersData={usersData} deleteUser={deleteUser} />
+        )}
       </div>
     </>
   );
