@@ -43,10 +43,22 @@ exports.userRegister = async (req, res) => {
   }
 };
 
-// get users
+// get all users
 exports.userGet = async (req, res) => {
+  const search = req.query.search || "";
+  const gender = req.query.gender || "";
+  const query = {
+    $or: [
+      { fname: { $regex: search, $options: "i" } }, // Search by fname
+      { lname: { $regex: search, $options: "i" } }, // Search by lname
+    ],
+  };
+  if (gender !== "All") {
+    query.gender = gender;
+  }
+
   try {
-    const usersdata = await users.find();
+    const usersdata = await users.find(query);
     res.status(200).json(usersdata);
   } catch (error) {
     res.status(401).json(error);
