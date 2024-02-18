@@ -6,7 +6,11 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { useNavigate } from "react-router-dom";
 import Tables from "../../components/Tables/Tables";
 import Spiner from "../../components/Spiner/Spiner";
-import { updatedata, addData, deletedata } from "../../components/Context/ContextProvider";
+import {
+  updatedata,
+  addData,
+  deletedata,
+} from "../../components/Context/ContextProvider";
 import Alert from "react-bootstrap/Alert";
 import { deleteUserFunction, getAllUsersFunction } from "../../services/Apis";
 import { toast } from "react-toastify";
@@ -14,10 +18,12 @@ import { toast } from "react-toastify";
 const Home = () => {
   const [usersData, setUsersData] = useState("");
   const [showSpin, setShowSpin] = useState(true);
+  const [search, setSearch] = useState("");
+  const [gender, setGender] = useState("All");
 
   const { useradd, setUseradd } = useContext(addData);
   const { updateUser, setUpdateUser } = useContext(updatedata);
-  const {deleteUserdata, setDeleteUserdata} = useContext(deletedata)
+  const { deleteUserdata, setDeleteUserdata } = useContext(deletedata);
 
   const navigate = useNavigate();
   const addUser = () => {
@@ -26,7 +32,7 @@ const Home = () => {
 
   // get all user
   const getAllUsers = async () => {
-    const response = await getAllUsersFunction();
+    const response = await getAllUsersFunction(search,gender);
     // console.log(response);
     if (response.status === 200) {
       setUsersData(response.data);
@@ -41,6 +47,7 @@ const Home = () => {
     const response = await deleteUserFunction(id);
     if (response.status === 200) {
       getAllUsers();
+      setDeleteUserdata(response.data);
     } else {
       toast.error("error");
     }
@@ -51,7 +58,7 @@ const Home = () => {
     setTimeout(() => {
       setShowSpin(false);
     }, 1200);
-  }, []);
+  }, [search,gender]);
 
   return (
     <>
@@ -71,6 +78,18 @@ const Home = () => {
         ""
       )}
 
+      {deleteUserdata ? (
+        <Alert
+          variant="danger"
+          onClose={() => setDeleteUserdata("")}
+          dismissible
+        >
+          {deleteUserdata.fname.toUpperCase()} Successfully Deleted
+        </Alert>
+      ) : (
+        ""
+      )}
+
       <div className="container">
         <div className="main_div">
           {/* search and add btn  */}
@@ -82,6 +101,7 @@ const Home = () => {
                   placeholder="Search"
                   className="me-2"
                   aria-label="Search"
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <Button variant="success" className="search_btn">
                   Search
@@ -112,18 +132,21 @@ const Home = () => {
                     label={"All"}
                     value={"All"}
                     defaultChecked
+                    onChange={(e)=>setGender(e.target.value)}
                   />
                   <Form.Check
                     type={"radio"}
                     name="gender"
                     label={"Male"}
                     value={"Male"}
+                    onChange={(e)=>setGender(e.target.value)}
                   />
                   <Form.Check
                     type={"radio"}
                     name="gender"
                     label={"Female"}
                     value={"Female"}
+                    onChange={(e)=>setGender(e.target.value)}
                   />
                 </div>
               </div>

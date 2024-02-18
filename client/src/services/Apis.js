@@ -5,8 +5,12 @@ export const registerFunction = async (data, header) => {
   return await commenReq("POST", `${BASE_URL}/user/register`, data, header);
 };
 
-export const getAllUsersFunction = async () => {
-  return await commenReq("GET", `${BASE_URL}/user/details`, "");
+export const getAllUsersFunction = async (search,gender) => {
+  return await commenReq(
+    "GET",
+    `${BASE_URL}/user/details?search=${search}&gender=${gender}`,
+    ""
+  );
 };
 
 export const getSingleUserFunction = async (id) => {

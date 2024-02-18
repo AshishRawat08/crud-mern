@@ -13,9 +13,12 @@ const Tables = ({ usersData, deleteUser }) => {
     <>
       <div className="container">
         <Row>
-          <div className="col mt-2">
+          <div className="col mt-2 mb-5">
             <Card className="shadow">
-              <Table className="align-items-center" responsive="sm">
+              <Table
+                className="align-items-center justify-content-center"
+                responsive="sm"
+              >
                 <thead className="thead-dark">
                   <tr className="table-dark">
                     <th>ID</th>
