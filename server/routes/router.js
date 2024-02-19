@@ -22,4 +22,7 @@ router.put("/user/edit/:id",upload.single("user_profile"),userControllers.userEd
 // delete a user
 router.delete("/user/delete/:id",userControllers.userDelete)
 
+// update status
+router.put("/user/status/:id",userControllers.userStatusUpdate)
+
 module.exports = router;

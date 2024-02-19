@@ -7,8 +7,22 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Badge from "react-bootstrap/Badge";
 import { BASE_URL } from "../../services/helper";
 import { NavLink } from "react-router-dom";
+import { userStatusChangeFunction } from "../../services/Apis";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const Tables = ({ usersData, deleteUser }) => {
+const Tables = ({ usersData, deleteUser, getAllUsers }) => {
+  const handleChangeStatus = async (id, status) => {
+    // console.log(id, status);
+    const response = await userStatusChangeFunction(id, status);
+    if (response.status === 200) {
+      getAllUsers();
+      toast.success("Status Updated");
+    } else {
+      toast.error("Status not Updated");
+    }
+  };
+
   return (
     <>
       <div className="container">
@@ -58,8 +72,23 @@ const Tables = ({ usersData, deleteUser }) => {
                                   </Badge>
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
-                                  <Dropdown.Item>Active</Dropdown.Item>
-                                  <Dropdown.Item>Inactive</Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() =>
+                                      handleChangeStatus(element._id, "Active")
+                                    }
+                                  >
+                                    Active
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() =>
+                                      handleChangeStatus(
+                                        element._id,
+                                        "Inactive"
+                                      )
+                                    }
+                                  >
+                                    Inactive
+                                  </Dropdown.Item>
                                 </Dropdown.Menu>
                               </Dropdown>
                             </td>
@@ -134,6 +163,7 @@ const Tables = ({ usersData, deleteUser }) => {
             </Card>
           </div>
         </Row>
+        <ToastContainer />
       </div>
     </>
   );

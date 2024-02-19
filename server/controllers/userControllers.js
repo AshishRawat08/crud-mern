@@ -47,6 +47,9 @@ exports.userRegister = async (req, res) => {
 exports.userGet = async (req, res) => {
   const search = req.query.search || "";
   const gender = req.query.gender || "";
+  const status = req.query.status || "";
+  const sort = req.query.sort || "";
+
   const query = {
     $or: [
       { fname: { $regex: search, $options: "i" } }, // Search by fname
@@ -56,9 +59,14 @@ exports.userGet = async (req, res) => {
   if (gender !== "All") {
     query.gender = gender;
   }
+  if (status !== "All") {
+    query.status = status;
+  }
 
   try {
-    const usersdata = await users.find(query);
+    const usersdata = await users
+      .find(query)
+      .sort({ datecreated: sort == "new" ? -1 : 1 });
     res.status(200).json(usersdata);
   } catch (error) {
     res.status(401).json(error);
@@ -124,6 +132,22 @@ exports.userDelete = async (req, res) => {
   try {
     const deleteUser = await users.findByIdAndDelete({ _id: id });
     res.status(200).json(deleteUser);
+  } catch (error) {
+    res.status(401).json(error);
+  }
+};
+
+// change or update user status
+exports.userStatusUpdate = async (req, res) => {
+  const { id } = req.params;
+  const { data } = req.body;
+  try {
+    const statusUpadte = await users.findByIdAndUpdate(
+      { _id: id },
+      { status: data },
+      { new: true }
+    );
+    res.status(200).json(statusUpadte);
   } catch (error) {
     res.status(401).json(error);
   }

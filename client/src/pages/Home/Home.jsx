@@ -20,6 +20,8 @@ const Home = () => {
   const [showSpin, setShowSpin] = useState(true);
   const [search, setSearch] = useState("");
   const [gender, setGender] = useState("All");
+  const [status, setStatus] = useState("All");
+  const [sort, setSort] = useState("new");
 
   const { useradd, setUseradd } = useContext(addData);
   const { updateUser, setUpdateUser } = useContext(updatedata);
@@ -32,7 +34,7 @@ const Home = () => {
 
   // get all user
   const getAllUsers = async () => {
-    const response = await getAllUsersFunction(search,gender);
+    const response = await getAllUsersFunction(search, gender, status, sort);
     // console.log(response);
     if (response.status === 200) {
       setUsersData(response.data);
@@ -58,7 +60,7 @@ const Home = () => {
     setTimeout(() => {
       setShowSpin(false);
     }, 1200);
-  }, [search,gender]);
+  }, [search, gender, status, sort]);
 
   return (
     <>
@@ -132,21 +134,21 @@ const Home = () => {
                     label={"All"}
                     value={"All"}
                     defaultChecked
-                    onChange={(e)=>setGender(e.target.value)}
+                    onChange={(e) => setGender(e.target.value)}
                   />
                   <Form.Check
                     type={"radio"}
                     name="gender"
                     label={"Male"}
                     value={"Male"}
-                    onChange={(e)=>setGender(e.target.value)}
+                    onChange={(e) => setGender(e.target.value)}
                   />
                   <Form.Check
                     type={"radio"}
                     name="gender"
                     label={"Female"}
                     value={"Female"}
-                    onChange={(e)=>setGender(e.target.value)}
+                    onChange={(e) => setGender(e.target.value)}
                   />
                 </div>
               </div>
@@ -160,8 +162,8 @@ const Home = () => {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                  <Dropdown.Item>New</Dropdown.Item>
-                  <Dropdown.Item>Old</Dropdown.Item>
+                  <Dropdown.Item onClick={()=>setSort("new")}>New</Dropdown.Item>
+                  <Dropdown.Item  onClick={()=>setSort("old")}>Old</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </div>
@@ -176,18 +178,21 @@ const Home = () => {
                     label={"All"}
                     value={"All"}
                     defaultChecked
+                    onChange={(e) => setStatus(e.target.value)}
                   />
                   <Form.Check
                     type={"radio"}
                     name="status"
                     label={"Active"}
                     value={"Active"}
+                    onChange={(e) => setStatus(e.target.value)}
                   />
                   <Form.Check
                     type={"radio"}
                     name="status"
                     label={"Inactive"}
                     value={"Inactive"}
+                    onChange={(e) => setStatus(e.target.value)}
                   />
                 </div>
               </div>
@@ -197,7 +202,7 @@ const Home = () => {
         {showSpin ? (
           <Spiner />
         ) : (
-          <Tables usersData={usersData} deleteUser={deleteUser} />
+          <Tables usersData={usersData} deleteUser={deleteUser} getAllUsers={getAllUsers}/>
         )}
       </div>
     </>
