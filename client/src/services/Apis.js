@@ -26,3 +26,6 @@ export const deleteUserFunction = async (id) => {
 export const userStatusChangeFunction = async (id, data) => {
   return await commenReq("PUT", `${BASE_URL}/user/status/${id}`, { data });
 };
+export const exportToCsvFunction = async () => {
+  return await commenReq("GET", `${BASE_URL}/userexport`, "");
+};

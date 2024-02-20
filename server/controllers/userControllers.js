@@ -1,5 +1,7 @@
 const users = require("../models/usersSchema");
 const moment = require("moment");
+const csv = require("fast-csv");
+const fs = require("fs");
 
 // register user
 exports.userRegister = async (req, res) => {
@@ -148,6 +150,55 @@ exports.userStatusUpdate = async (req, res) => {
       { new: true }
     );
     res.status(200).json(statusUpadte);
+  } catch (error) {
+    res.status(401).json(error);
+  }
+};
+
+// export user
+exports.userExport = async (req, res) => {
+  try {
+    const usersdata = await users.find();
+
+    const csvStream = csv.format({ headers: true });
+
+    if (!fs.existsSync("public/files/export")) {
+      if (!fs.existsSync("public/files")) {
+        fs.mkdirSync("public/files");
+      }
+      if (!fs.existsSync("public/files/export")) {
+        fs.mkdirSync("./public/files/export");
+      }
+    }
+
+    const writablestream = fs.createWriteStream(
+      "public/files/export/users.csv"
+    );
+    csvStream.pipe(writablestream);
+
+    writablestream.on("finish", function () {
+      res
+        .status(200)
+        .json({ downloadUrl: `http://localhost:6010/files/export/users.csv` });
+    });
+
+    if (usersdata.length > 0) {
+      usersdata.map((user) => {
+        csvStream.write({
+          First_Name: user.fname ? user.fname : "-",
+          Last_Name: user.lname ? user.lname : "-",
+          Mobile: user.mobile ? user.mobile : "-",
+          Email: user.email ? user.email : "-",
+          Status: user.status ? user.status : "-",
+          Gender: user.gender ? user.gender : "-",
+          Location: user.location ? user.location : "-",
+          Date_Created: user.datecreated ? user.datecreated : "-",
+          Date_Updated: user.dateupdate ? user.dateupdate : "-",
+        });
+      });
+    }
+    csvStream.end();
+    writablestream.end();
   } catch (error) {
     res.status(401).json(error);
   }

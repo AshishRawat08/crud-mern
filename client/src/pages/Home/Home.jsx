@@ -12,7 +12,11 @@ import {
   deletedata,
 } from "../../components/Context/ContextProvider";
 import Alert from "react-bootstrap/Alert";
-import { deleteUserFunction, getAllUsersFunction } from "../../services/Apis";
+import {
+  deleteUserFunction,
+  exportToCsvFunction,
+  getAllUsersFunction,
+} from "../../services/Apis";
 import { toast } from "react-toastify";
 
 const Home = () => {
@@ -50,6 +54,17 @@ const Home = () => {
     if (response.status === 200) {
       getAllUsers();
       setDeleteUserdata(response.data);
+    } else {
+      toast.error("error");
+    }
+  };
+
+  // export user
+  const exportUser = async () => {
+    const response = await exportToCsvFunction();
+    // console.log(response)
+    if (response.status === 200) {
+      window.open(response.data.downloadUrl, "blank");
     } else {
       toast.error("error");
     }
@@ -121,7 +136,9 @@ const Home = () => {
           {/* export to csv*/}
           <div className="filter_div mt-5 d-flex justify-content-sm-between flex-wrap">
             <div className="export_csv">
-              <Button className="export_btn">Export to Csv</Button>
+              <Button className="export_btn" onClick={exportUser}>
+                Export to Csv
+              </Button>
             </div>
             {/* filter by gender  */}
             <div className="filter_gender">
@@ -162,8 +179,12 @@ const Home = () => {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                  <Dropdown.Item onClick={()=>setSort("new")}>New</Dropdown.Item>
-                  <Dropdown.Item  onClick={()=>setSort("old")}>Old</Dropdown.Item>
+                  <Dropdown.Item onClick={() => setSort("new")}>
+                    New
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => setSort("old")}>
+                    Old
+                  </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </div>
@@ -202,7 +223,11 @@ const Home = () => {
         {showSpin ? (
           <Spiner />
         ) : (
-          <Tables usersData={usersData} deleteUser={deleteUser} getAllUsers={getAllUsers}/>
+          <Tables
+            usersData={usersData}
+            deleteUser={deleteUser}
+            getAllUsers={getAllUsers}
+          />
         )}
       </div>
     </>
