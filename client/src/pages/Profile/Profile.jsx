@@ -89,7 +89,7 @@ const Profile = () => {
                     class="fa-solid fa-calendar-days"
                     style={{ color: "purple" }}
                   ></i>
-                  &nbsp; Date updated :- <span>{userProfile.dateupdated}</span>
+                  &nbsp; Date updated :- <span>{moment(userProfile.dateupdated).format("DD-MM-YYYY")}</span>
                 </h5>
               </div>
             </Card.Body>

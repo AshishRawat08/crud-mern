@@ -2,6 +2,7 @@ const users = require("../models/usersSchema");
 const moment = require("moment");
 const csv = require("fast-csv");
 const fs = require("fs");
+const BASE_URL = process.env.BASE_URL;
 
 // register user
 exports.userRegister = async (req, res) => {
@@ -103,7 +104,7 @@ exports.userEdit = async (req, res) => {
   } = req.body;
   const file = req.file ? req.file.filename : user_profile;
 
-  const dateupdate = moment(new Date()).format("YYYY-MM-DD hh:mm:ss");
+  const dateupdated = moment(new Date()).format("YYYY-MM-DD hh:mm:ss");
   try {
     const updateUser = await users.findByIdAndUpdate(
       { _id: id },
@@ -116,7 +117,7 @@ exports.userEdit = async (req, res) => {
         location,
         status,
         profile: file,
-        dateupdate,
+        dateupdated,
       },
       { new: true }
     );
@@ -179,7 +180,7 @@ exports.userExport = async (req, res) => {
     writablestream.on("finish", function () {
       res
         .status(200)
-        .json({ downloadUrl: `http://localhost:6010/files/export/users.csv` });
+        .json({ downloadUrl: `${BASE_URL}/files/export/users.csv` });
     });
 
     if (usersdata.length > 0) {
